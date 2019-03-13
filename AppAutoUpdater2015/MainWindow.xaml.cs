@@ -1,21 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using AppAutoUpdate;
 using System.Net;
 using System.ComponentModel;
 using System.IO.Compression;
 using System.IO;
+using System.Configuration;
 
 namespace AppAutoUpdater2015
 {
@@ -32,12 +22,14 @@ namespace AppAutoUpdater2015
 
         private void CompareVersions()
         {
-            string downloadToPath = "D:\\VersionsTest\\Downloads";
+            string downloadToPath = ConfigurationManager.AppSettings["localAppURL"];
             string localVersion =
-              Versions.LocalVersion(downloadToPath + "\\version.txt");
-            string remoteURL = "http://localhost/AutoUpdate/";
-            string remoteVersion =
-              Versions.RemoteVersion(remoteURL + "updateVersion.txt");
+              Versions.LocalVersion(Path.Combine(downloadToPath, ConfigurationManager.AppSettings["localVersionName"]));
+            //string remoteURL = "http://localhost/AutoUpdate/";
+            string remoteURL = ConfigurationManager.AppSettings["remoteAppURL"];
+            if (!remoteURL.EndsWith("/"))
+                remoteURL += "/";
+            string remoteVersion = Versions.RemoteVersion(remoteURL + ConfigurationManager.AppSettings["remoteVersionName"]);
             string remoteFile = remoteURL + remoteVersion + ".zip";
 
             LocalVersion.Text = localVersion;
@@ -76,8 +68,8 @@ namespace AppAutoUpdater2015
             string zipName = downloadToPath + currentVersion + ".zip";
             // Download folder\version\ + executable
             string exePath = downloadToPath + currentVersion + "\\" + executeTarget;
-
-            if (new FileInfo(zipName).Exists)
+            FileInfo zipInfo = new FileInfo(zipName);
+            if (zipInfo.Exists)
             {
 
 
@@ -94,6 +86,7 @@ namespace AppAutoUpdater2015
                 {
                     MessageBox.Show("Problem with download. File does not exist.");
                 }
+                zipInfo.Delete();
             }
             else
             {

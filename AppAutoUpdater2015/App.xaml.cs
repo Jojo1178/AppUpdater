@@ -13,7 +13,7 @@ namespace AppAutoUpdater2015
     /// </summary>
     public partial class App : Application, ISingleInstanceApp
     {
-        private const string Unique = "My_Unique_Application_String";
+        private const string Unique = "J57359B4-A423-4JSI-ACK2-E045C35789B1";
 
         [STAThread]
         public static void Main()
@@ -28,6 +28,10 @@ namespace AppAutoUpdater2015
                 // Allow single instance code to perform cleanup operations
                 SingleInstance<App>.Cleanup();
             }
+            else
+            {
+                MessageBox.Show("There is another instance of the application running.");
+            }
         }
 
         #region ISingleInstanceApp Members
@@ -36,7 +40,6 @@ namespace AppAutoUpdater2015
         {
             // handle command line arguments of second instance
             // …
-
             return true;
         }
 
